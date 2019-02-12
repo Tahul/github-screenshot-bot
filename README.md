@@ -30,6 +30,8 @@ npm install
 
 You can add environment variables from .env.
 
+If you're setting this up on a server, be careful about this part of Puppeteer: [Dependencies](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch).
+
 Slack webhook isn't required.
 
 This was made after seeing this tweet from [@sindresorhus](https://twitter.com/sindresorhus):
