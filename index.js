@@ -1,7 +1,9 @@
 require('dotenv').config()
 const hasSlackWebhook = process.env.SLACK_WEBHOOK ? true : false
 const SlackWebhook = require('slack-webhook')
-const slack = new SlackWebhook(process.env.SLACK_WEBHOOK)
+if (hasSlackWebhook) {
+  const slack = new SlackWebhook(process.env.SLACK_WEBHOOK)
+}
 const puppeteer = require('puppeteer')
 const formatDate = date => {
   const pad = s => {

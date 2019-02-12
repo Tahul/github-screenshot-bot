@@ -23,7 +23,7 @@ npm install
 
 ```bash
 // Add this to your crontab
-0 0 * * * node {path/to/index.js}
+0 0 * * * cd {path/to/github-screenshot-bot} && node index.js
 ```
 
 ## Notes
