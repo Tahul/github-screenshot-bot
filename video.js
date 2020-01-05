@@ -12,6 +12,7 @@ const run = async () => {
   const rawFiles = fs
     .readdirSync("./screenshots/")
     .filter(item => item !== ".gitignore")
+    .filter(item => item !== "video.mp4")
     .map(item => "screenshots/" + item)
 
   let filesCropped = 0
@@ -27,18 +28,19 @@ const run = async () => {
   }
 
   const videoOptions = {
-    fps: 25,
-    loop: 0.25,
+    fps: 30,
+    loop: 0.125,
     transition: false,
     videoBitrate: 1024,
     videoCodex: "libx264",
-    size: "640x?",
+    size: "1280x?",
     format: "mp4"
   }
 
   const croppedFiles = fs
     .readdirSync("./tmp/")
     .filter(item => item !== ".gitignore")
+    .filter(item => item !== "video.mp4")
     .map(item => "tmp/" + item)
     .sort((a, b) => {
       const dateA = getDateFromFilename(
@@ -54,16 +56,21 @@ const run = async () => {
 
   try {
     console.log("Creating the video...")
-    const videoPath = "screenshots/video.mp4"
+    const videoPath = "./screenshots/video.mp4"
 
-    await videoshow(croppedFiles, videoOptions).save(videoPath)
-
-    console.log("Cleaning up tmp files")
-    for (const file of croppedFiles) {
-      await fs.unlinkSync(file)
-    }
-
-    console.log("Video created: " + videoPath)
+    await videoshow(croppedFiles, videoOptions)
+      .save(videoPath)
+      .on("end", async () => {
+        console.log("Cleaning up tmp files")
+        for (const file of croppedFiles) {
+          try {
+            await fs.unlinkSync(file)
+          } catch (e) {
+            console.log("Cannot unlink " + file)
+          }
+        }
+        console.log("Video created: " + videoPath)
+      })
   } catch (e) {
     console.log(e)
   }
