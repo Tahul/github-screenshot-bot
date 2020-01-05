@@ -19,7 +19,7 @@ const run = async () => {
 
   for (const rawFile of rawFiles) {
     await sharp(rawFile)
-      .extract({ width: 1920, height: 1080, left: 0, top: 300 })
+      .extract({ width: 1920, height: 900, left: 0, top: 300 })
       .toFile("tmp/" + rawFile.replace("screenshots/screenshot-", ""))
 
     filesCropped = filesCropped + 1
@@ -59,7 +59,9 @@ const run = async () => {
     const videoPath = "./screenshots/video.mp4"
 
     await videoshow(croppedFiles, videoOptions)
-      .save(videoPath)
+      .on("error", error => console.log(`Encoding Error: ${error.message}`))
+      .on("exit", () => console.log("Video recorder exited"))
+      .on("close", () => console.log("Video recorder closed"))
       .on("end", async () => {
         console.log("Cleaning up tmp files")
         for (const file of croppedFiles) {
@@ -71,6 +73,7 @@ const run = async () => {
         }
         console.log("Video created: " + videoPath)
       })
+      .save(videoPath)
   } catch (e) {
     console.log(e)
   }
