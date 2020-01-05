@@ -59,6 +59,7 @@ const run = async () => {
     const videoPath = "./screenshots/video.mp4"
 
     await videoshow(croppedFiles, videoOptions)
+      .save(videoPath)
       .on("error", error => console.log(`Encoding Error: ${error.message}`))
       .on("exit", () => console.log("Video recorder exited"))
       .on("close", () => console.log("Video recorder closed"))
@@ -73,7 +74,6 @@ const run = async () => {
         }
         console.log("Video created: " + videoPath)
       })
-      .save(videoPath)
   } catch (e) {
     console.log(e)
   }
