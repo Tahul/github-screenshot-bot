@@ -1,6 +1,7 @@
 const fs = require("fs")
 const sharp = require("sharp")
 const execSync = require("child_process").execSync
+const ignoredFiles = [".gitignore", "list.txt", "video.mp4"]
 
 const getDateFromFilename = date => {
   const dateParts = date.split("-")
@@ -9,19 +10,20 @@ const getDateFromFilename = date => {
 }
 
 const run = async () => {
+  // Getting all screenshots
   const rawFiles = fs
     .readdirSync("./screenshots/")
-    .filter(item => item !== ".gitignore")
-    .filter(item => item !== "video.mp4")
+    .filter(item => !ignoredFiles.includes(item))
     .map(item => "screenshots/" + item)
-
+  // Init files cropped
   let filesCropped = 0
 
+  // Loop on screenshots to crop them
   for (const rawFile of rawFiles) {
     try {
-      /* await sharp(rawFile)
+      await sharp(rawFile)
         .extract({ width: 1920, height: 900, left: 0, top: 300 })
-        .toFile("tmp/" + rawFile.replace("screenshots/screenshot-", "")) */
+        .toFile("tmp/" + rawFile.replace("screenshots/screenshot-", ""))
     } catch (e) {
       console.log("Cannot crop " + rawFile)
     }
@@ -31,13 +33,12 @@ const run = async () => {
     console.log(filesCropped + "/" + rawFiles.length + " files cropped...")
   }
 
+  // Create the temporary list file
   const list = await fs.writeFileSync("tmp/list.txt", "")
 
   const croppedFiles = fs
     .readdirSync("./tmp/")
-    .filter(item => item !== ".gitignore")
-    .filter(item => item !== "list.txt")
-    .filter(item => item !== "video.mp4")
+    .filter(item => !ignoredFiles.includes(item))
     .map(item => "tmp/" + item)
     .sort((a, b) => {
       const dateA = getDateFromFilename(
@@ -51,10 +52,8 @@ const run = async () => {
     })
     .reverse()
 
+  console.log("Creating the video...")
   try {
-    console.log("Creating the video...")
-    const videoPath = "./screenshots/video.mp4"
-
     for (const file of croppedFiles) {
       try {
         await fs.appendFileSync(
@@ -72,16 +71,19 @@ const run = async () => {
     )
 
     console.log("Cleaning up tmp files")
-
     for (const file of fs
       .readdirSync("./tmp/")
       .filter(item => item !== ".gitignore")) {
-      await fs.unlinkSync(file)
+      try {
+        await fs.unlinkSync(file)
+      } catch (e) {
+        console.log("Cannot unlink " + file)
+      }
     }
 
     console.log("Video created: " + videoPath)
   } catch (e) {
-    console.log(e)
+    console.log("Cannot create the video")
   }
 }
 
