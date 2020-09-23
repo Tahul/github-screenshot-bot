@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^6.2.0",
-    "puppeteer": "^1.12.2",
-    "sharp": "^0.23.4",
+    "dotenv": "^8.2.0",
+    "puppeteer": "^5.3.1",
+    "sharp": "^0.26.1",
     "slack-webhook": "^1.0.0"
   }
 }
